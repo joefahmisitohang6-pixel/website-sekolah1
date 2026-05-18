@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portal SMK NEGERI Digital</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, sans-serif; }
+        body { background-color: #050505; height: 100vh; display: flex; justify-content: center; align-items: center; overflow: hidden; position: relative; }
+        
+        /* Background Effects */
+        .bg-effects { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; background: radial-gradient(circle at 50% 50%, rgba(42, 82, 152, 0.15) 0%, transparent 50%), linear-gradient(to right, rgba(255,255,255,0.03) 1px, transparent 1px), linear-gradient(to bottom, rgba(255,255,255,0.03) 1px, transparent 1px); background-size: 100% 100%, 40px 40px, 40px 40px; animation: gridMove 20s linear infinite; }
+        @keyframes gridMove { 0% { background-position: 0 0, 0 0; } 100% { background-position: 0 100%, 40px 40px; } }
+        .glow-orb { position: absolute; border-radius: 50%; filter: blur(100px); opacity: 0.4; animation: float 10s ease-in-out infinite; z-index: 0; }
+        .glow-orb.blue { width: 400px; height: 400px; background: #1e3c72; top: -100px; left: -100px; }
+        .glow-orb.light { width: 300px; height: 300px; background: #2a5298; bottom: -80px; right: -80px; animation-delay: -5s; }
+        @keyframes float { 0%, 100% { transform: translate(0, 0); } 50% { transform: translate(20px, 20px); } }
+
+        /* Login Container */
+        .login-container { background: rgba(20, 30, 60, 0.85); padding: 40px; border-radius: 20px; box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5); width: 100%; max-width: 400px; text-align: center; backdrop-filter: blur(15px); border: 1px solid rgba(255,255,255,0.1); transition: all 0.5s ease; position: relative; z-index: 10; }
+        .login-container:hover { transform: translateY(-5px); box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6); }
+        .login-container h1 { background: linear-gradient(to right, #4facfe, #00f2fe); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 10px; font-size: 26px; font-weight: 800; }
+        .login-container p { color: #8ba4d4; margin-bottom: 30px; font-size: 14px; }
+        .input-group { margin-bottom: 20px; text-align: left; }
+        .input-group label { display: block; font-size: 12px; color: #8ba4d4; margin-bottom: 5px; font-weight: bold; }
+        .input-group input { width: 100%; padding: 12px 15px; border: 2px solid rgba(255,255,255,0.1); border-radius: 10px; outline: none; transition: all 0.3s; background: rgba(255,255,255,0.05); color: #fff; font-size: 14px; }
+        .input-group input::placeholder { color: #5a6a8a; }
+        .input-group input:focus { border-color: #00f2fe; box-shadow: 0 0 15px rgba(0, 242, 254, 0.2); }
+        .btn-login { width: 100%; padding: 14px; background: linear-gradient(135deg, #1e3c72, #2a5298); color: white; border: none; border-radius: 10px; font-size: 16px; font-weight: bold; cursor: pointer; transition: all 0.2s; position: relative; overflow: hidden; }
+        .btn-login:hover { transform: scale(1.02); box-shadow: 0 5px 20px rgba(42, 82, 152, 0.5); }
+        .error-msg { color: #ff6b6b; font-size: 12px; margin-top: 10px; display: none; text-align: center; }
+
+        /* Dashboard */
+        .dashboard-container { display: none; width: 100%; height: 100vh; background-color: #0a0f1e; opacity: 0; transition: opacity 0.8s ease; position: relative; z-index: 10; }
+        .navbar { background-color: rgba(20, 30, 60, 0.95); padding: 15px 40px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 20px rgba(0,0,0,0.3); border-bottom: 1px solid rgba(255,255,255,0.05); position: sticky; top: 0; z-index: 100; }
+        .brand { font-size: 20px; font-weight: bold; background: linear-gradient(to right, #4facfe, #00f2fe); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .user-info { display: flex; align-items: center; gap: 15px; }
+        .user-avatar { width: 35px; height: 35px; border-radius: 50%; background: linear-gradient(135deg, #1e3c72, #2a5298); border: 2px solid #00f2fe; display: flex; align-items: center; justify-content: center; color: #00f2fe; font-weight: bold; font-size: 14px; }
+        .btn-logout { padding: 8px 15px; background: transparent; border: 1px solid #ff6b6b; color: #ff6b6b; border-radius: 5px; cursor: pointer; font-size: 12px; transition: 0.3s; }
+        .btn-logout:hover { background: #ff6b6b; color: white; }
+        .main-content { padding: 40px; max-width: 1200px; margin: 0 auto; }
+        .welcome-banner { background: linear-gradient(135deg, rgba(30, 60, 114, 0.9), rgba(42, 82, 152, 0.9)); color: white; padding: 40px; border-radius: 15px; margin-bottom: 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); position: relative; overflow: hidden; }
+        .welcome-banner::before { content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%; background: radial-gradient(circle, rgba(0,242,254,0.1) 0%, transparent 40%); animation: rotate 15s linear infinite; }
+        @keyframes rotate { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        .welcome-banner h2 { margin-bottom: 10px; position: relative; z-index: 2; }
+        .welcome-banner p { position: relative; z-index: 2; opacity: 0.8; }
+        .grid-menu { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 25px; }
+        .card { background: rgba(30, 60, 114, 0.3); padding: 25px; border-radius: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.2); transition: all 0.3s; border: 1px solid rgba(255,255,255,0.05); }
+        .card:hover { transform: translateY(-5px); background: rgba(30, 60, 114, 0.5); border-color: rgba(0, 242, 254, 0.3); }
+        .card h3 { color: #4facfe; margin-bottom: 15px; font-size: 18px; }
+        .card p { color: #8ba4d4; font-size: 14px; line-height: 1.6; }
+        .tag { display: inline-block; padding: 5px 10px; background: rgba(0, 242, 254, 0.15); color: #00f2fe; border-radius: 20px; font-size: 11px; margin-top: 10px; font-weight: bold; }
+        .tag.admin { background: rgba(255, 107, 107, 0.15); color: #ff6b6b; }
+        .show { display: block !important; opacity: 1 !important; }
+        .hidden { display: none !important; }
+    </style>
+</head>
+<body>
+
+    <!-- Background -->
+    <div class="bg-effects">
+        <div class="glow-orb blue"></div>
+        <div class="glow-orb light"></div>
+    </div>
+
+    <!-- FITUR 1: LOGIN PAGE -->
+    <div class="login-container" id="loginPage">
+        <h1>SMK NEGERI 13</h1>
+        <p>Sistem Informasi Akademik Digital</p>
+        
+        <form id="loginForm">
+            <div class="input-group">
+                <label>Username</label>
+                <input type="text" id="username" placeholder="admin / siswa" required>
+            </div>
+            <div class="input-group">
+                <label>Password</label>
+                <input type="password" id="password" placeholder="********" required>
+            </div>
+            <button type="submit" class="btn-login">Masuk Sistem</button>
+            <p class="error-msg" id="errorMsg">Username atau Password salah!</p>
+        </form>
+        
+        <div style="margin-top: 20px; font-size: 12px; color: #5a6a8a; text-align: left; padding: 15px; background: rgba(255,255,255,0.03); border-radius: 10px; border-left: 3px solid #00f2fe;">
+            🔑 Akun Demo:<br>
+            ✅ Admin: <b>admin</b> / <b>123</b><br>
+            ✅ Siswa: <b>siswa</b> / <b>123</b>
+        </div>
+    </div>
+
+    <!-- FITUR 2: HOME/DASHBOARD -->
+    <div class="dashboard-container" id="dashboardPage">
+        <nav class="navbar">
+            <div class="brand">🏫 SMK NEGERI 13 MEDAN</div>
+            <div class="user-info">
+                <div class="user-avatar" id="avatarInit">A</div>
+                <span id="displayName" style="font-weight: bold; color: #fff;">Hai, User</span>
+                <button class="btn-logout" onclick="logout()">Logout</button>
+            </div>
+        </nav>
+
+        <div class="main-content">
+            <div class="welcome-banner">
+                <h2 id="heroTitle">Selamat Datang!</h2>
+                <p id="heroDesc">Akses informasi akademik dengan mudah.</p>
+            </div>
+
+            <div class="grid-menu">
+                <div class="card">
+                    <h3>📢 Pengumuman</h3>
+                    <p>Terbaru: Libur nasional 17 Agustus.</p>
+                    <span class="tag" id="tag1">Info</span>
+                </div>
+                <div class="card">
+                    <h3>📅 Jadwal Kelas</h3>
+                    <p>Senin = upacara ---  kamis = senam
+                     Jumat: kebersihan kelas. ---
+                     Sabtu: Libur.</p>
+                    <span class="tag">Info</span>
+                </div>
+                <div class="card" id="adminCard" class="hidden">
+                    <h3>⚙️ Manajemen Siswa</h3>
+                    <p>Halaman admin untuk input data.</p>
+                    <span class="tag admin">Admin Only</span>
+                </div>
+                <div class="card">
+                    <h3>📚 E-Perpustakaan</h3>
+                    <p>Buku baru tersedia di lantai 3.</p>
+                    <span class="tag">Buku</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ===== DATA AKUN =====
+        const users = {
+            "admin": { password: "12345", name: "Administrator/Guru", role: "admin" },
+            "siswa": { password: "123", name: "Siswa -JOBAR", role: "siswa" }
+        };
+
+        const loginForm = document.getElementById('loginForm');
+        const loginPage = document.getElementById('loginPage');
+        const dashboardPage = document.getElementById('dashboardPage');
+        const errorMsg = document.getElementById('errorMsg');
+        const usernameInput = document.getElementById('username');
+        const passwordInput = document.getElementById('password');
+
+        // ===== FITUR LOGIN =====
+        loginForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const userInput = usernameInput.value.toLowerCase().trim();
+            const passInput = passwordInput.value;
+
+            if (users[userInput] && users[userInput].password === passInput) {
+                loginBerhasil(users[userInput]);
+            } else {
+                errorMsg.style.display = 'block';
+                loginPage.style.transform = "translateX(-10px)";
+                setTimeout(() => { loginPage.style.transform = "translateX(10px)"; }, 100);
+                setTimeout(() => { loginPage.style.transform = "translateX(0)"; }, 200);
+                setTimeout(() => { errorMsg.style.display = 'none'; }, 3000);
+            }
+        });
+
+        function loginBerhasil(userData) {
+            document.getElementById('displayName').innerText = userData.name;
+            document.getElementById('avatarInit').innerText = userData.name.charAt(0).toUpperCase();
+            
+            if(userData.role === "admin") {
+                document.getElementById('heroTitle').innerText = "Halo, Pak/Bu Administrator!";
+                document.getElementById('heroDesc').innerText = "Kelola data sekolah dengan aman.";
+                document.getElementById('adminCard').classList.remove('hidden');
+                document.getElementById('tag1').classList.add('admin');
+                document.getElementById('tag1').innerText = "Admin Only";
+            } else {
+                document.getElementById('heroTitle').innerText = "Halo, Siswa Berprestasi!";
+                document.getElementById('heroDesc').innerText = "Jangan lupa kumpulkan tugas tepat waktu.";
+                document.getElementById('adminCard').classList.add('hidden');
+                document.getElementById('tag1').classList.remove('admin');
+                document.getElementById('tag1').innerText = "Info";
+            }
+
+            loginPage.style.opacity = '0';
+            setTimeout(() => {
+                loginPage.style.display = 'none';
+                dashboardPage.classList.add('show');
+            }, 500);
+        }
+
+        // ===== FITUR LOGOUT =====
+        function logout() {
+            dashboardPage.classList.remove('show');
+            loginPage.style.display = 'block';
+            setTimeout(() => { loginPage.style.opacity = '1'; }, 100);
+            
+            // Reset form
+            usernameInput.value = '';
+            passwordInput.value = '';
+        }
+    </script>
+</body>
+</html>
